@@ -7,8 +7,8 @@ module_ui <- function(id) {
     label = "Poses",
     #choices = groups[input$select_homolog]
     choices = c()
-  )
-  r3dmolOutput(outputId = id, height = "500px", width = "400px")
+  ),
+  r3dmolOutput(outputId = ns("construct"), height = "500px", width = "400px")
   )
 }
 module_server <- function(input, output, session, selector){
@@ -46,9 +46,13 @@ module_server <- function(input, output, session, selector){
   }
   
   ns <- session$ns
+  print(input$select_homolog)
+  #print(input$select_pose)
   observeEvent(selector(), {
-    updateSelectInput(session, "select_pose", choices=groups[[selector()]]),
-    eval(parse(text=paste0("output$",id,"<- render_homolog(input$select_homolog)")))
+    updateSelectInput(session, "select_pose", choices=groups[[selector()]])
+    #eval(parse(text=paste0("output$",id,"<- render_homolog(input$select_homolog)")))
+    print(input$select_pose)
+    output$construct <- render_homolog(input$select_homolog, input$select_pose)
   })
   
   
@@ -168,7 +172,7 @@ server <- function(input, output, session) {
       ## wrap element in a div with id for ease of removal
       ui = tags$div(
         selectizeInput(
-          inputId = "select_homolog",
+          inputId = session$ns("select_homolog"),
           label = "Choose homolog",
           choices = names(groups)
         ),
@@ -177,7 +181,7 @@ server <- function(input, output, session) {
         br()
       )
     )
-    mod1<- callModule(module_server, id, reactive({input$select_homolog}))
+    output$id<- callModule(module_server, id, reactive({input$select_homolog}))
     
     
     #inserted <<- c(id, inserted)
