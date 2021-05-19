@@ -46,13 +46,16 @@ module_server <- function(input, output, session, selector){
   }
   
   ns <- session$ns
-  print(input$select_homolog)
+  #print(input$select_homolog)
   #print(input$select_pose)
+  #print(selector())
   observeEvent(selector(), {
     updateSelectInput(session, "select_pose", choices=groups[[selector()]])
     #eval(parse(text=paste0("output$",id,"<- render_homolog(input$select_homolog)")))
-    print(input$select_pose)
-    output$construct <- render_homolog(input$select_homolog, input$select_pose)
+    #print(ns("select_pose"))
+    #print(parse(text=paste0("input$",ns("select_pose"))))
+    #pose <- eval(parse(text=paste0("input$",ns("select_pose"))))
+    output$construct <- render_homolog(selector(), input$select_pose)
   })
   
   
@@ -144,10 +147,10 @@ observeEvent(input$set_perceived_distance, {
 })
 
 returnValue <- reactive({
-  input$selectHere
+  input$select_pose
 })
 
-#print(returnValue)
+print(returnValue)
 return(returnValue)
 }
 
@@ -162,6 +165,7 @@ server <- function(input, output, session) {
     counter <- input$add
     #id <- paste0('txt', btn)
     id<- paste0('construct_', counter)
+    #id <- session$ns("select_homolog")
     if (counter%%2 == 1){
       place_holder = "#place_odd"
     } else {
@@ -172,7 +176,7 @@ server <- function(input, output, session) {
       ## wrap element in a div with id for ease of removal
       ui = tags$div(
         selectizeInput(
-          inputId = session$ns("select_homolog"),
+          inputId = session$ns(paste0("select_homolog_", counter)),
           label = "Choose homolog",
           choices = names(groups)
         ),
@@ -181,8 +185,9 @@ server <- function(input, output, session) {
         br()
       )
     )
-    output$id<- callModule(module_server, id, reactive({input$select_homolog}))
-    
+    #output$id<- callModule(module_server, id, reactive({input$select_homolog}))
+    print(counter)
+    output$id<- callModule(module_server, id, reactive({eval(parse(text="input$select_homolog_",counter))}))
     
     #inserted <<- c(id, inserted)
 
