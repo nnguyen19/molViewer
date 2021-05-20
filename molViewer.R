@@ -3,13 +3,13 @@ library(r3dmol)
 library(bio3d)
 library(colourpicker)
 library(stringr)
-
+library(shinyWidgets)
+library(shinyjs)
 
 
 #kinases_list <- list.files(path='data',
 #           pattern=glob2rx("*tgt*"))
 files <- list.files(path = 'data')
-
 #poses <- test[test %>% str_detect("tgt.pdb")]
 homologs <- str_subset(files, "tgt.pdb")
 homologs <- homologs %>% str_sub(1,-9)

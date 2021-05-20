@@ -48,12 +48,13 @@ ui <- fluidPage(
     # ),
     column(
       width = 6,
-      tabsetPanel(id = "tabs",
+      #tabsetPanel(id = "tabs",
                   #tabPanel("dummy", actionButton("add", label = "More", icon = icon("plus")),
                   #         actionButton("remove", label = "Less" ,icon = icon("minus")))
-                  tabPanel("Add Homolog",""),
-                  fluidRow(actionButton("add", label = "", icon = icon("plus")),
-                           actionButton("remove", label = "" ,icon = icon("minus"))))
+                  #tabPanel("Number of Homologs to Be Displayed",""),
+                   fluidRow(actionButton("add", label = "", icon = icon("plus")),
+                            actionButton("remove", label = "" ,icon = icon("minus")))
+                  #fluidRow(numericInput("num_hom", "Number of Homologs to Be Displayed", 2, min = 2, max = 100))
     ),
     br(),
     # column(
@@ -87,16 +88,27 @@ ui <- fluidPage(
     #   br(),
     #   r3dmolOutput(outputId = "construct_1", height = "500px", width = "400px")
     # ),
-    column(
-      width = 4,
+    ######################## adding module to place holder
+     column(
+       width = 4,
+       tags$div(id = 'place_odd')),
+     column(
+       width = 5,
+       tags$div(id = 'place_even'))
+    
+    #uiOutput(outputId = "display_structure")
+    #########################
+    
+    #column(
+     # width = 4,
       # column(
         # width = 9,
-    tags$div(id = 'place_odd')),
-    column(
-      width = 5,
+    #tags$div(id = 'place_odd')),
+    #column(
+     # width = 5,
       # column(
       # width = 9,
-      tags$div(id = 'place_even'))
+    #  tags$div(id = 'place_even'))
     # column(
     #   width = 4,
     #   column(
