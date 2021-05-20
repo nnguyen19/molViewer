@@ -7,37 +7,32 @@ ui <- fluidPage(
   fluidRow(
     column(
       width = 3,
-      wellPanel(
-        
-        colourInput(
-          inputId = "set_background_color",
-          label = "Set background color",
-          closeOnClick = TRUE,
-          value = "#FFFFFF"
-        ),
-        uiOutput(outputId = "select_panel"),
-        actionButton(
-          inputId = "zoom_in",
-          label = "Zoom in",
-          icon = icon("plus")
-        ),
-        actionButton(
-          inputId = "zoom_out",
-          label = "Zoom out",
-          icon = icon("minus")
-        ),
-        actionButton(
-          inputId = "spin",
-          label = "Spin",
-          icon = icon("sync-alt")
-        ),
-        actionButton(
-          inputId = "clear",
-          label = "Clear",
-          icon = icon("trash-alt")
-        )
-      )
-    ),
+      
+      fluidRow(actionButton("add", label = "", icon = icon("plus")),
+               actionButton("remove", label = "" ,icon = icon("minus")))
+    )),
+  fluidRow(
+    column(
+      width = 3,
+      # column(
+      # width = 9,
+      tags$div(id = 'place_odd')),
+    column(
+      width = 3, offset = 2,
+      # column(
+      # width = 9,
+      tags$div(id = 'place_even'))
+  ),
+  
+  
+  
+  
+  
+  # fluidRow(
+  #   column(
+  #     width = 3,
+  #     
+  #   ),
     # column(
     #        width = 6,
     #       selectizeInput(
@@ -46,17 +41,17 @@ ui <- fluidPage(
     #       choices = names(groups)
     #       )
     # ),
-    column(
-      width = 6,
-      #tabsetPanel(id = "tabs",
-                  #tabPanel("dummy", actionButton("add", label = "More", icon = icon("plus")),
-                  #         actionButton("remove", label = "Less" ,icon = icon("minus")))
-                  #tabPanel("Number of Homologs to Be Displayed",""),
-                   fluidRow(actionButton("add", label = "", icon = icon("plus")),
-                            actionButton("remove", label = "" ,icon = icon("minus")))
-                  #fluidRow(numericInput("num_hom", "Number of Homologs to Be Displayed", 2, min = 2, max = 100))
-    ),
-    br(),
+    # column(
+    #   width = 6,
+    #   #tabsetPanel(id = "tabs",
+    #               #tabPanel("dummy", actionButton("add", label = "More", icon = icon("plus")),
+    #               #         actionButton("remove", label = "Less" ,icon = icon("minus")))
+    #               #tabPanel("Number of Homologs to Be Displayed",""),
+    #                fluidRow(actionButton("add", label = "", icon = icon("plus")),
+    #                         actionButton("remove", label = "" ,icon = icon("minus")))
+    #               #fluidRow(numericInput("num_hom", "Number of Homologs to Be Displayed", 2, min = 2, max = 100))
+    # ),
+    # br(),
     # column(
     #   width = 4,
     #   # column(
@@ -89,23 +84,23 @@ ui <- fluidPage(
     #   r3dmolOutput(outputId = "construct_1", height = "500px", width = "400px")
     # ),
     ######################## adding module to place holder
-     column(
-       width = 4,
-       tags$div(id = 'place_odd')),
-     column(
-       width = 5,
-       tags$div(id = 'place_even'))
+     # column(
+     #   width = 4,
+     #   tags$div(id = 'place_odd')),
+     # column(
+     #   width = 5,
+     #   tags$div(id = 'place_even'))
     
     #uiOutput(outputId = "display_structure")
     #########################
     
     #column(
-     # width = 4,
+    #  width = 4,
       # column(
         # width = 9,
     #tags$div(id = 'place_odd')),
     #column(
-     # width = 5,
+     # width = 5, offset = 2,
       # column(
       # width = 9,
     #  tags$div(id = 'place_even'))
@@ -125,5 +120,5 @@ ui <- fluidPage(
     #   r3dmolOutput(outputId = "construct_2", height = "500px", width = "400px")
     # )
    
-  )
+  
 )
