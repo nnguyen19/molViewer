@@ -3,6 +3,7 @@ library(r3dmol)
 library(bio3d)
 library(colourpicker)
 library(stringr)
+library(shinyWidgets)
 
 
 
