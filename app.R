@@ -29,12 +29,23 @@ compound_list <- list.files(path='data',
 
 
 
-bio3d_docked<- function(path2m1, path2m2){
-  print(path2m1)
-  print(path2m2)
-  pdb1 <- read.pdb(path2m1)
-  pdb2 <- read.pdb(path2m2)
-  docked <- cat.pdb(pdb1, pdb2, pdb1, rechain=FALSE, renumber=FALSE)
+bio3d_docked<- function(homolog, poses){
+  print(homolog)
+  print(poses)
+  #pdb1 <- read.pdb(path2m1)
+  #pdb2 <- read.pdb(path2m2)
+  hom<- read.pdb(homolog)
+  ps <- lapply(poses, function(x) read.pdb(x))
+  
+  docked <- cat.pdb(hom, ps[[1]], hom, rechain=FALSE, renumber=FALSE)
+  if (length(ps)>1){
+    
+  
+  for (i in 2:length(ps)) {
+    
+    docked <- cat.pdb(docked, ps[[i]], hom, rechain=FALSE, renumber=FALSE)
+  }
+  }
   return(docked)
 }
 
@@ -82,11 +93,14 @@ innerUiTemplate<-function(id, data){
     ),
     br(),
     
-    pickerInput(  inputId=ns("poseSelector"),
-                  label = "Select Pose",
+    selectizeInput(  inputId=ns("poseSelector"),
+                  label = "Select Multiple Pose(s)",
                   choices= NULL,
                   selected = NULL,
-                  multiple = FALSE
+                  multiple = TRUE,
+                  options = list(
+                    plugins = list("remove_button")
+                  )
     ),
     br(),
     r3dmolOutput(outputId = ns("model"))#, height = "500px", width = "400px")
@@ -98,8 +112,19 @@ innerUiTemplate<-function(id, data){
 }
 
 #updates
-innerServer<-function(id,data, var){
+innerServer<-function(id, data, var){
   render_homolog<- function(homolog, pose){ 
+    
+    # if (length(pose) ==1){
+    #   docked_model <- bio3d_docked(
+    #     paste(c("data/", homolog, "_tgt.pdb"), collapse = ""),
+    #     paste("data", pose, sep="/"))
+    # }else{
+    #   docked_model<- lapply(list, function)
+    # }
+    
+      docked_model <- bio3d_docked(paste(c("data/", homolog, "_tgt.pdb"), collapse = ""),
+                                   lapply(pose, function(x) paste("data", x, sep="/")))
     renderR3dmol({
       return(
         r3dmol(
@@ -108,9 +133,7 @@ innerServer<-function(id,data, var){
           #upperZoomLimit = 350,
           backgroundColor = "#FFFFFF"
         ) %>%
-          m_add_model(data = m_bio3d(bio3d_docked(
-            paste(c("data/", homolog, "_tgt.pdb"), collapse = ""),
-            paste("data", pose, sep="/")))
+          m_add_model(data = m_bio3d(docked_model)
             , format = "pdb") %>%
           #m_center() %>%
           m_zoom_to() %>%
@@ -139,7 +162,7 @@ innerServer<-function(id,data, var){
       
       observeEvent(eventExpr = input$homologSelector, handlerExpr = {
         #if (!is.null(input$columnSelector)) mychoices$col <- data[[input$columnSelector]]
-        updatePickerInput(
+        updateSelectizeInput(
           session,
           inputId="poseSelector",
           choices = data[[input$homologSelector]]
@@ -187,7 +210,7 @@ outerServer<-  function(id,data){
         
         counter$count=counter$count+1
         inserted <<- c(counter$count,inserted)
-        insertUI(selector=paste0("#",ns("innerModulePlaceholder")),where="afterEnd",
+        insertUI(selector=paste0("#",ns("innerModulePlaceholder")),where="beforeEnd",
                  ui = tags$div(id = counter$count,
                    innerUiTemplate(id=ns(paste0("innerModule", counter$count )), data))
                  )
