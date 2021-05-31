@@ -61,12 +61,19 @@ outerUI<-function(id){ #This is main UI
   
   ns <- NS(id)
   
+  fluidPage(
   fluidRow(column(3,
-          actionButton(inputId=ns("addItem"), "Add New Homolog"),
-          
-           actionButton(inputId=ns("removeItem"), "Remove Homolog"),
-          div(id = ns('innerModulePlaceholder'))),
+          actionButton(inputId=ns("addItem"), "Add New Homolog")),
+          column(3,
+           actionButton(inputId=ns("removeItem"), "Remove Homolog"))
     
+  ),
+  fluidRow(column(3,
+                  div(id = ns('innerModulePlaceholder_odd'))
+                  ),
+           column(2),
+           column(3,
+                  div(id = ns('innerModulePlaceholder_even'))))
   )
 }
 
@@ -210,16 +217,23 @@ outerServer<-  function(id,data){
         
         counter$count=counter$count+1
         inserted <<- c(counter$count,inserted)
-        insertUI(selector=paste0("#",ns("innerModulePlaceholder")),where="beforeEnd",
+        if (counter$count %%2 ==1){
+        insertUI(selector=paste0("#",ns("innerModulePlaceholder_odd")),where="beforeEnd",
                  ui = tags$div(id = counter$count,
                    innerUiTemplate(id=ns(paste0("innerModule", counter$count )), data))
-                 )
+        )}
+        else{
+          insertUI(selector=paste0("#",ns("innerModulePlaceholder_even")),where="beforeEnd",
+                   ui = tags$div(id = counter$count,
+                                 innerUiTemplate(id=ns(paste0("innerModule", counter$count )), data))
+        )}
         innerServer(id=paste0("innerModule", counter$count ), data )
+        
       }
       )
       
       observeEvent(input$removeItem, {
-        #removeUI(selector = paste0('#', ns(inserted[length(inserted)])))
+        
         removeUI(selector = paste0("#",inserted[length(inserted)]))
         inserted <<- inserted[-length(inserted)]
       }
@@ -243,14 +257,7 @@ ui <- fluidPage(
 # main server
 server <- function(input, output, session) {
   
-  # data<-reactive({
-  #   
-  #   column1<-c(1,2,3,4,5)
-  #   column2<-c("a","d","e","g","k")
-  #   data<-data.frame(column1, column2)
-  #   
-  #   return(data)
-  # })
+  
   data <- reactive({
     return(data.frame(groups))
   })
