@@ -4,7 +4,7 @@ library(bio3d)
 library(colourpicker)
 library(stringr)
 library(shinyWidgets)
-library(shinyjs)
+
 
 
 #kinases_list <- list.files(path='data',
@@ -26,49 +26,64 @@ names(groups)<- homologs
 
 compound_list <- list.files(path='data',
                             pattern=glob2rx("*PAK*lgd*"))
-get_choices <- function(){
+
+
+
+bio3d_docked<- function(homolog, poses){
+  print(homolog)
+  print(poses)
+  #pdb1 <- read.pdb(path2m1)
+  #pdb2 <- read.pdb(path2m2)
+  hom<- read.pdb(homolog)
+  ps <- lapply(poses, function(x) read.pdb(x))
   
-}
-  
-  
-bio3d_docked<- function(path2m1, path2m2){
-  print(path2m1)
-  print(path2m2)
-  pdb1 <- read.pdb(path2m1)
-  pdb2 <- read.pdb(path2m2)
-  docked <- cat.pdb(pdb1, pdb2, pdb1, rechain=FALSE, renumber=FALSE)
+  docked <- cat.pdb(hom, ps[[1]], hom, rechain=FALSE, renumber=FALSE)
+  if (length(ps)>1){
+    
+    
+    for (i in 2:length(ps)) {
+      
+      docked <- cat.pdb(docked, ps[[i]], hom, rechain=FALSE, renumber=FALSE)
+    }
+  }
   return(docked)
 }
-# display_multiple<- function(path2m1, path2m2){
-#   #print(path2m1)
-#   m1<- r3dmol(
-#     cartoonQuality = 10,
-#     lowerZoomLimit = 50,
-#     upperZoomLimit = 350,
-#     backgroundColor = "#FFFFFF"
-#   ) %>%
-#     m_add_models(data = path2m1
-#                  
-#                  , format = "pdb") %>%
-#     m_set_style(style = m_style_cartoon())%>%
-#     
-#     m_zoom_to()
-#   
-#   m2<- r3dmol(
-#     cartoonQuality = 10,
-#     lowerZoomLimit = 50,
-#     upperZoomLimit = 350,
-#     backgroundColor = "#FFFFFF"
-#   ) %>%
-#     m_add_models(data = path2m2
-#                  
-#                  , format = "pdb") %>%
-#     m_set_style(style = m_style_stick()) %>%
-#     
-#     m_zoom_to()
-#   
-#   grid<-m_grid(viewer = list(m1, m2), control_all = TRUE,
-#     viewer_config = m_viewer_spec(backgroundColor = "white")
-#   )
-#   return(grid)
-# }
+
+
+render_homolog<- function(homolog, pose){ 
+  
+  docked_model <- bio3d_docked(paste(c("data/", homolog, "_tgt.pdb"), collapse = ""),
+                               lapply(pose, function(x) paste("data", x, sep="/")))
+  renderR3dmol({
+    return(
+      r3dmol(
+        cartoonQuality = 20,
+        #lowerZoomLimit = 50,
+        #upperZoomLimit = 350,
+        backgroundColor = "#FFFFFF"
+      ) %>%
+        m_add_model(data = m_bio3d(docked_model)
+                    , format = "pdb") %>%
+        #m_center() %>%
+        m_zoom_to() %>%
+        m_set_style( 
+          style = m_style_cartoon( color = "#00cc96")) %>%
+        m_set_style(
+          sel = m_sel(ss = "s"),
+          style = m_style_cartoon(color = "#636efa", arrows = TRUE)
+        ) %>%
+        # Style the alpha helix
+        m_set_style(
+          sel = m_sel( ss = "h"), # Style alpha helix
+          style = m_style_cartoon(color = "#ff7f0e")) %>%
+        m_set_style(
+          sel = m_sel(resn = "LIG"),
+          style = m_style_stick()
+        ) 
+    )
+  })
+}
+
+
+
+
