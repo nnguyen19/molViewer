@@ -13,9 +13,9 @@ library(dplyr)
 library(stringr)
 
 #WHEN PUBLISHED ON SHINY IO
-py_install(c('pandas')) 
+#py_install(c('pandas')) 
 #LOCALLY
-#use_python("/opt/anaconda3/bin/python3.7")
+use_python("/opt/anaconda3/bin/python3.7")
 
 source('molViewer.R')
 source('export_posefile.R')
@@ -61,7 +61,7 @@ mainUI<-function(id){ #This is main UI
                         #   actionButton("action2", "Action button", class = "btn-primary")
                         # ),
                         tags$h3(strong("Welcome to KinCo!")),
-                        tags$h5("A database for in silico kinase-compound structures"),
+                        tags$h5("A database for", tags$em('in silico'), "kinase-compound structures"),
                         #tags$h5("Instructions to use KinCo:"),
                         br(),
                         br(),
@@ -362,7 +362,7 @@ homologInnerUi<-function(id){
 #updates
 homologServer<-function(id){
   
-  #print(posedf())
+  
   render_homolog<- function(homolog, poses){ 
     # Here input the homolog .pdb filepath, pose .pdb file path
     docked_model <- bio3d_docked(homolog, poses)
@@ -442,7 +442,6 @@ homologServer<-function(id){
         #selected_poses<-input$poseSelector
         poses<- lapply(pose_ids, function(POSE) paste0(output_dir, tgtgeneid, '-', lgdinchikey, '/',model_name,'-',POSE,'_lgd.pdb'))
         homolog <- paste0("./data/",GENEID,'/PDB/',input$homologSelector,".pdb")
-        print(poses)
         
         
         output$model <- render_homolog(homolog, poses )  
