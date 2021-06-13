@@ -13,14 +13,15 @@ library(dplyr)
 library(stringr)
 
 #WHEN PUBLISHED ON SHINY IO
-#py_install(c('pandas')) 
+py_install(c('pandas',"gdown")) 
 #LOCALLY
-use_python("/opt/anaconda3/bin/python3.7")
+#use_python("/opt/anaconda3/bin/python3.7")
 
 source('molViewer.R')
 source('export_posefile.R')
 
 pd <- import('pandas')
+gdown <- import("gdown")
 
 #UI elements
 mainUI<-function(id){ #This is main UI
@@ -181,12 +182,14 @@ kinaseServer<-  function(id, kinase_compound_pair){
       GENEID <<- compoundMetaData$ENTREZ_GENE_ID
       unlink(paste0("./data/",GENEID))
       dir.create(paste0("./data/",GENEID))
-      download.file(paste0("https://drive.google.com/uc?id=",compoundMetaData$GID,"&export=download"), destfile = paste0("./data/",GENEID,"/",compound_file))
+      gdown$download(paste0("https://drive.google.com/uc?id=",compoundMetaData$GID,"&export=download"), output = paste0("./data/",GENEID,"/",compound_file))
       showModal(modalDialog(HTML("Locating our database... <br>
                             Kinase found! <br>
                             Searching for compound..."), footer=NULL))
       
-      download.file(paste0("https://drive.google.com/uc?id=",compoundMetaData$PDB_GID,"&export=download"), destfile = paste0("./data/",GENEID,'/PDB.zip'), mode = "wb")
+      #download.file(paste0("https://drive.google.com/uc?id=",compoundMetaData$PDB_GID,"&export=download"), destfile = paste0("./data/",GENEID,'/PDB.zip'), mode = "wb")
+      #Because PDB folder is very large, skipping virus warning
+      gdown$download(paste0("https://drive.google.com/uc?id=",compoundMetaData$PDB_GID,"&export=download"), output = paste0("./data/",GENEID,'/PDB.zip'))
       showModal(modalDialog("Compound found!", footer=NULL))
       showModal(modalDialog(HTML("Locating our database... <br>
                             Kinase found! <br>
