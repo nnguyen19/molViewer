@@ -515,23 +515,24 @@ homologServer<-function(id){
         )
         
         if (input$set_style == "Cartoon"){
-        m_set_style( 
-          id = "model",
-          style = m_style_cartoon( color = "#00cc96"))
-          m_set_style(
-            id= "model",
-            sel = m_sel(ss = "s"),
-            style = m_style_cartoon(color =  "#839DC7", arrows = TRUE)
-          )
-          #Style the alpha helix
-          m_set_style(
-            id = "model",
-            sel = m_sel( ss = "h"), # Style alpha helix
-            style = m_style_cartoon(color = "#DED0A6"))
+          
+          m_set_style( id = "model",
+            style = m_style_cartoon( color = "#839DC7"))
+          
+            m_set_style( id = "model",
+              sel = m_sel(ss = "s"),
+              style = m_style_cartoon(color =  "#839DC7", arrows = TRUE))
+        
+          
           
           m_set_style(
             id = "model",
             sel = m_sel(resn = "LIG"),
+            style = m_style_stick()
+          )
+          m_set_style(
+            id = "model",
+            sel = m_sel(resn = "UNL"),
             style = m_style_stick()
           )
         } else{
@@ -539,6 +540,11 @@ homologServer<-function(id){
           id = "model",
           style = style
         ) 
+          m_set_style(
+            id = "model",
+            sel = m_sel(resn = "UNL"),
+            style = m_style_stick()
+          )
           m_set_style(
             id = "model",
             sel = m_sel(resn = "LIG"),
